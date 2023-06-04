@@ -1,6 +1,7 @@
 package org.zzd.controller;
 
-import org.zzd.entity.Categories;
+import org.springframework.validation.annotation.Validated;
+import org.zzd.entity.CategoriesEntity;
 import org.zzd.service.CategoriesService;
 import org.zzd.utils.PageHelper;
 import org.zzd.param.BasePageParam;
@@ -10,12 +11,9 @@ import org.zzd.result.ResponseResult;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiImplicitParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import springfox.documentation.annotations.ApiIgnore;
+import org.zzd.vo.AddCategoryVo;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,16 +32,16 @@ public class CategoriesController {
 
     @ApiOperation(value = "分页查询")
     @GetMapping("/queryCategories")
-    public ResponseResult<PageHelper<Categories>> queryPage(BasePageParam params) {
+    public ResponseResult<PageHelper<CategoriesEntity>> queryPage(BasePageParam params) {
         return categoriesService.queryPage(params);
     }
 
     @ApiOperation(value = "获取详情")
     @GetMapping("/readCategories")
     public ResponseResult selectOne(Integer id) {
-        Categories categories = categoriesService.getById(id);
-        if (!Objects.isNull(categories)) {
-            return ResponseResult.success(categories);
+        CategoriesEntity categoriesEntity = categoriesService.getById(id);
+        if (!Objects.isNull(categoriesEntity)) {
+            return ResponseResult.success(categoriesEntity);
         }
         else {
             throw new ResponseException(ResultCodeEnum.PARAM_NOT_VALID);
@@ -52,19 +50,14 @@ public class CategoriesController {
 
     @ApiOperation(value = "新增数据")
     @PostMapping("/insertCategories")
-    public ResponseResult insert(@RequestBody Categories categories) {
-        boolean flag = categoriesService.save(categories);
-        if (flag) {
-            return ResponseResult.success();
-        }else {
-            throw new ResponseException(ResultCodeEnum.PARAM_NOT_VALID);
-        }
+    public ResponseResult insert(@Validated @RequestBody AddCategoryVo categoryVo) {
+        return categoriesService.createCategory(categoryVo);
     }
 
     @ApiOperation(value = "修改数据")
     @PostMapping("/updateCategories")
-    public ResponseResult update(@RequestBody Categories categories) {
-        categoriesService.updateById(categories);
+    public ResponseResult update(@RequestBody CategoriesEntity categoriesEntity) {
+        categoriesService.updateById(categoriesEntity);
         return ResponseResult.success();
     }
 
