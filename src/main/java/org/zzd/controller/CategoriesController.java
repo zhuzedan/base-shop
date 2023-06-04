@@ -1,6 +1,8 @@
 package org.zzd.controller;
 
 import org.springframework.validation.annotation.Validated;
+import org.zzd.dto.categories.CreateCategoryDto;
+import org.zzd.dto.categories.UpdateCategoryDto;
 import org.zzd.entity.CategoriesEntity;
 import org.zzd.service.CategoriesService;
 import org.zzd.utils.PageHelper;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.zzd.vo.AddCategoryVo;
 
 import java.util.List;
 import java.util.Objects;
@@ -50,28 +51,24 @@ public class CategoriesController {
 
     @ApiOperation(value = "新增数据")
     @PostMapping("/insertCategories")
-    public ResponseResult insert(@Validated @RequestBody AddCategoryVo categoryVo) {
-        return categoriesService.createCategory(categoryVo);
+    public ResponseResult insert(@Validated @RequestBody CreateCategoryDto categoryDto) {
+        return categoriesService.createCategory(categoryDto);
     }
 
     @ApiOperation(value = "修改数据")
     @PostMapping("/updateCategories")
-    public ResponseResult update(@RequestBody CategoriesEntity categoriesEntity) {
-        categoriesService.updateById(categoriesEntity);
+    public ResponseResult update(@Validated @RequestBody UpdateCategoryDto categoryDto) {
+        categoriesService.updateCategory(categoryDto);
         return ResponseResult.success();
     }
 
     @ApiOperation(value = "删除数据")
     @DeleteMapping("deleteCategories")
     public ResponseResult delete(Long id) {
-        boolean flag = categoriesService.removeById(id);
-        if (flag) {
-            return ResponseResult.success();
-        }
-        else {
-            throw new ResponseException(ResultCodeEnum.PARAM_NOT_VALID);
-        }
+        categoriesService.deleteCategory(id);
+        return ResponseResult.success();
     }
+
     @ApiOperation(value = "批量删除数据")
     @DeleteMapping("/batchRemoveCategories")
     public ResponseResult batchRemove(@RequestBody List<Long> idList) {
